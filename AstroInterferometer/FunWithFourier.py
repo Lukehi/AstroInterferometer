@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 # get the figure
-f = plt.imread("Dara2017.jpg")
+f = plt.imread("Images/Dara2017.jpg")
 # hack to make images with more than 2-dimensions work
 if len(f.shape) > 2:
 	f = f[:,:,0]

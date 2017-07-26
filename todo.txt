@@ -1,0 +1,5 @@
+# To do list
+
+Tidy up and annotate code
+Stream line and include the spatial filtering
+Remove the hard edge effects
