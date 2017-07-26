@@ -1,4 +1,4 @@
-# Capture webcam input and perform Fourier transform
+# Capture webcam input and perform Fourier transformZ
 import cv2
 import numpy as np
 from skimage import exposure
@@ -37,8 +37,8 @@ while True:
 	cv2.imshow('Phase', F_phase_bit_contrast)
 
 
-		if cv2.waitKey(1) & 0xFF == ord('q'):
-			break
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		break
 
 
 

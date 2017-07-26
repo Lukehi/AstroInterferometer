@@ -75,7 +75,7 @@ plt.clf()
 #-------------------------------------------------------------------------------
 # filter out high and low spatial frequencies
 # http://glowingpython.blogspot.com/2011/08/fourier-transforms-and-image-filtering.html
-f = plt.imread("Dara2017.jpg")
+f = plt.imread("Images/Dara2017.jpg")
 if len(f.shape) > 2:
 	f = f[:,:,0]
 
@@ -93,6 +93,7 @@ ic = F.shape[0]/2
 jc = F.shape[1]/2
 
 # Loop through the image pixels
+# Fix this so it is faster and uses the masking feature of numpy
 for i in range(F.shape[0]):
 	for j in range(F.shape[1]):
 		# if the pixel is greater than the defined radius keep it zero.
@@ -139,7 +140,7 @@ plt.savefig("fft2d_filtered.png", bbox_inches="tight")
 # The effect of partial sampling
 plt.clf()
 
-f = plt.imread("Dara2017.jpg")
+f = plt.imread("Images/Dara2017.jpg")
 if len(f.shape) > 2:
 	f = f[:,:,0]
 
