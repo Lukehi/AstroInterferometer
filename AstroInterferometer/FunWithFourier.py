@@ -3,6 +3,7 @@ import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import time
 
 # get the figure
 f = plt.imread("Images/Dara2017.jpg")
@@ -18,14 +19,14 @@ g = np.exp(-( (d-mu)**2 / ( 2.0 * sigma**2 ) ) )
 f2 = (f * g)
 
 # Two dimension FFT -- F is complex consisting of an amplitude and phase
-F = np.fft.fft2(f2)
-
+F_smooth = np.fft.fft2(f2)
+F = np.fft.fft2(f)
 
 # find the amp and phase -- shift to put 0 wavenumber at the center
-F_mag = np.abs(np.fft.fftshift(F))
-F_phase = np.angle(np.fft.fftshift(F))
+F_mag = np.abs(np.fft.fftshift(F_smooth))
+F_phase = np.angle(np.fft.fftshift(F_smooth))
 
-#Produce a plot of the original image, amplitude and phase
+# Produce a plot of the original image, amplitude and phase
 plt.rc("font", size=10)
 
 plt.subplot(131)
@@ -40,8 +41,8 @@ plt.subplot(133)
 plt.imshow(F_phase)
 plt.title("phase of F(k)")
 
-f = plt.gcf()
-f.set_size_inches(10.0,6.0)
+f_plt = plt.gcf()
+f_plt.set_size_inches(10.0,6.0)
 
 plt.savefig("fft2d.png", bbox_inches="tight")
 plt.clf()
@@ -80,33 +81,18 @@ plt.clf()
 #-------------------------------------------------------------------------------
 # filter out high and low spatial frequencies
 # http://glowingpython.blogspot.com/2011/08/fourier-transforms-and-image-filtering.html
-f = plt.imread("Images/Dara2017.jpg")
-if len(f.shape) > 2:
-	f = f[:,:,0]
-
-F_orig = np.fft.fftshift(F)
+F_orig = np.fft.fftshift(F_smooth)
 
 P = np.zeros(F.shape, dtype=np.complex128)
 Q = np.zeros(F.shape, dtype=np.complex128)
 
 # Define a circle which will be used for masking
-frac = 0.1
-rad = frac*int(min(F.shape)/2)
+xx, yy = np.mgrid[:F_orig.shape[0], :F_orig.shape[1]]
+circle = (xx - F_orig.shape[0]/2.0) ** 2 + (yy - F_orig.shape[1]/2.0) ** 2
 
-
-ic = F.shape[0]/2
-jc = F.shape[1]/2
-
-# Loop through the image pixels
-# Fix this so it is faster and uses the masking feature of numpy
-for i in range(F.shape[0]):
-	for j in range(F.shape[1]):
-		# if the pixel is greater than the defined radius keep it zero.
-		if math.sqrt( (i-ic)**2 + (j-jc)**2) < rad:
-			P[i,j] = F_orig[i,j]
-		# if the pixel is less than the defined radius keep it zero
-		if math.sqrt( (i-ic)**2 + (j-jc)**2) > rad:
-			Q[i,j] = F_orig[i,j]
+# Mask the pixels
+P[circle < 500] = F_orig[circle < 500]
+Q[circle > 500] = F_orig[circle > 500]
 
 # Fourier transform the filtered images
 f_filtered_P = np.real(np.fft.ifft2(np.fft.ifftshift(P)))
@@ -144,11 +130,6 @@ plt.savefig("fft2d_filtered.png", bbox_inches="tight")
 #-------------------------------------------------------------------------------
 # The effect of partial sampling
 plt.clf()
-
-f = plt.imread("Images/Dara2017.jpg")
-if len(f.shape) > 2:
-	f = f[:,:,0]
-
 F_orig = np.fft.fftshift(F)
 
 P_mag = np.zeros(F_mag.shape, dtype=np.complex128)
@@ -157,15 +138,8 @@ P_phase = np.zeros(F_phase.shape, dtype=np.complex128)
 # Select a range of random points and set them to 0
 Q = np.random.rand(F.shape[0],F.shape[1])
 
-# Loop through the image pixels
-for i in range(F.shape[0]):
-	for j in range(F.shape[1]):
-		if Q[i,j] > 0.1:
-			P_mag[i-3:i+3,j-3:3+3] = 0.0
-			P_phase[i-3:i+3,j-3:3+3] = 0.0
-		else:
-			P_mag[i,j] = F_mag[i,j]
-			P_phase[i,j] = F_phase[i,j]
+P_mag[Q < 0.3] = F_mag[Q < 0.3]
+P_phase[Q < 0.3] = F_phase[Q < 0.3]
 
 # Fourier transform the filtered images back into the x,y plane
 Fnew = P_mag*np.exp(1j*P_phase)
@@ -191,3 +165,39 @@ f = plt.gcf()
 f.set_size_inches(12.0,12.0)
 
 plt.savefig("fft2d_partial.png", bbox_inches="tight")
+
+
+'''
+Old Code Graveyard
+
+# Slow way of doing the spatial filtering
+frac = 0.1
+rad = frac*int(min(F.shape)/2)
+ic = F.shape[0]/2
+jc = F.shape[1]/2
+
+# Loop through the image pixels
+# Fix this so it is faster and uses the masking feature of numpy
+for i in range(F.shape[0]):
+	for j in range(F.shape[1]):
+		# if the pixel is greater than the defined radius keep it zero.
+		if math.sqrt( (i-ic)**2 + (j-jc)**2) < rad:
+			P[i,j] = F_orig[i,j]
+		# if the pixel is less than the defined radius keep it zero
+		if math.sqrt( (i-ic)**2 + (j-jc)**2) > rad:
+			Q[i,j] = F_orig[i,j]
+
+
+# Slow way of doing the random sampling
+# Loop through the image pixels
+for i in range(F.shape[0]):
+	for j in range(F.shape[1]):
+		if Q[i,j] > 0.1:
+			P_mag[i-3:i+3,j-3:3+3] = 0.0
+			P_phase[i-3:i+3,j-3:3+3] = 0.0
+		else:
+			P_mag[i,j] = F_mag[i,j]
+			P_phase[i,j] = F_phase[i,j]
+
+
+'''
