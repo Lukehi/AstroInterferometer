@@ -3,3 +3,13 @@
 Tidy up and annotate code
 Stream line and include the spatial filtering
 Remove the hard edge effects
+
+Ideas
+
+Add in spatial filtering
+	- small and large scale emission like in the non-live stream example
+	- discrete sampling
+	- Probably need to add in options for this
+
+Interactive spatial filtering (long goal)
+	- Allow a user to setup a second webcam that will allow them to move antennas around to simulate the discrete sampling. This might be difficult, will probably require opencv image detection to identify where the antennas are placed.

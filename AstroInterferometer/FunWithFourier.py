@@ -10,11 +10,16 @@ f = plt.imread("Images/Dara2017.jpg")
 if len(f.shape) > 2:
 	f = f[:,:,0]
 
-# two dimension FFT -- F is complex consisting of an amplitude and phase
-F = np.fft.fft2(f)
+# Smooth the edges
+x, y = np.meshgrid(np.linspace(-1,1,f.shape[1]), np.linspace(-1,1,f.shape[0]))
+d = np.sqrt(x*x+y*y)
+sigma, mu = 0.5, 0.0
+g = np.exp(-( (d-mu)**2 / ( 2.0 * sigma**2 ) ) )
+f2 = (f * g)
 
-print(f.shape)
-print(F.shape)
+# Two dimension FFT -- F is complex consisting of an amplitude and phase
+F = np.fft.fft2(f2)
+
 
 # find the amp and phase -- shift to put 0 wavenumber at the center
 F_mag = np.abs(np.fft.fftshift(F))
