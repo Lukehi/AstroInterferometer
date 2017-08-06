@@ -1,12 +1,12 @@
 # To do list
 
 Tidy up and annotate code
-Stream line and include the spatial filtering
-Remove the hard edge effects
+Stream line (done) and include the spatial filtering into the webcam code
+Remove the hard edge effects (done)
 
 Ideas
 
-Add in spatial filtering
+Add in spatial filtering to webcam code
 	- small and large scale emission like in the non-live stream example
 	- discrete sampling
 	- Probably need to add in options for this
